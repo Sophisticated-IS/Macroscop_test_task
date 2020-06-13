@@ -5,13 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Cameras_Viewer"
         mc:Ignorable="d"
-        Title="Macroscop Cameras Viewer" Height="450" Width="800">
-    <Grid Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}" HorizontalAlignment="Right" Margin="0,0,-0.4,0" Width="794">
-        <!--<MediaElement Name="Video_Player" >
-         
-        </MediaElement>-->
+        Title="Macroscop Cameras Viewer" Height="450" Width="800" Closing="Window_Closing">
+    <Grid Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
 
-        <Image x:Name="picture"></Image>
-        <Button Width="30" Height=" 30" VerticalAlignment="Bottom" Click="Button_Click"></Button>
+        <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition MinHeight="50px" MaxHeight="100"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Image x:Name="picture" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+            </Grid>
+            <Grid Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <Button MinHeight="50px">
+                        <Button.Content>
+                            <Image Name="larrow" Source="WPF_Cameras_Viewer.Properties.Resources.left_arrow">
+                            </Image>
+                        </Button.Content>    
+                    </Button>
+                    
+                    <Button MinHeight="50px" VerticalAlignment="Bottom" Click="Button_Click_Play" Content="Play" FontSize="16" FontWeight="Bold"/>
+                </StackPanel>
+                
+            </Grid>
+        </Grid>
+
+
     </Grid>
 </Window>
