@@ -1,0 +1,14 @@
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\bin\Debug\WPF_Cameras_Viewer.exe.config
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\bin\Debug\WPF_Cameras_Viewer.exe
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\bin\Debug\WPF_Cameras_Viewer.pdb
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.csprojAssemblyReference.cache
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\MainWindow.g.cs
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\App.g.cs
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer_MarkupCompile.cache
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer_MarkupCompile.lref
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\MainWindow.baml
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.g.resources
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.Properties.Resources.resources
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.csproj.GenerateResource.cache
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.exe
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.pdb

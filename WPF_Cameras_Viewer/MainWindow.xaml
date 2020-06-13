@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Cameras_Viewer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="Macroscop Cameras Viewer" Height="450" Width="800">
+    <Grid Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}" HorizontalAlignment="Right" Margin="0,0,-0.4,0" Width="794">
+        <!--<MediaElement Name="Video_Player" >
+         
+        </MediaElement>-->
+
+        <Image x:Name="picture"></Image>
+        <Button Width="30" Height=" 30" VerticalAlignment="Bottom" Click="Button_Click"></Button>
     </Grid>
 </Window>
