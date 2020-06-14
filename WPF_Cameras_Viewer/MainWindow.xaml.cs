@@ -42,7 +42,7 @@ namespace WPF_Cameras_Viewer
             public string quality_degree;//качество стрима 
             public int X_resolution;//разрешение X и Y
             public int Y_resolution;
-            
+
         }
         struct Сamera_id_and_name
         {
@@ -51,73 +51,73 @@ namespace WPF_Cameras_Viewer
         }
         struct Сurrent_selected_camera
         {
-          public int camera_order_id;//порядковый индекс в списке конкретной камеры 
-          public  Сamera_id_and_name cam_id_name;
-          public  Сamera_stream_inf cam_stream_inf;
+            public int camera_order_id;//порядковый индекс в списке конкретной камеры 
+            public Сamera_id_and_name cam_id_name;
+            public Сamera_stream_inf cam_stream_inf;
         }
 
         string URL = "http://demo.macroscop.com:8080/mobile?login=root&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&resolutionX=640&resolutionY=480&fps=25";
         public void Start_mjpeg_stream()//метод для воспроизведения потока mjpeg картинок
-        {      
+        {
             var request = (HttpWebRequest)WebRequest.Create(URL);
             request.KeepAlive = true;//для более эффективной работы с сетью
-            Stream stream; 
+            Stream stream;
             try
             {
-               stream = request.GetResponse().GetResponseStream(); //TODO: System.Net.WEb Exception                
+                stream = request.GetResponse().GetResponseStream(); //TODO: System.Net.WEb Exception                
             }
             catch (WebException)
-            {                
+            {
                 MessageBox.Show("Server not respond");
                 Reconnect_to_camera();
                 return;//выходим из функции так как сервер не отвечает
             }
-            
+
             while (true)
             {
-                var byte_buff = new byte[1024];
+                var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера
                 var image_jpeg = new byte[170000];//Размер после сжатия примерно - 160 Кб берем буфер под макс разрешение в сжатом виде MJPEG 1280*720 * 24;  Степень сжатия 17.4
                 int jpeg_i = 0;//индекс для движения по массиву  image_jpeg
                 int start_jpeg_index = 0;//индекс байтов начала 0xff 0xd8
 
-                bool is_end_of_frame = false; 
-            
+                bool is_end_of_frame = false;
+
                 while (!is_end_of_frame)
                 {
-                   int actual_number_of_bytes = 0;//хранит число байт реально считанных потоком                        
+                    int actual_number_of_bytes = 0;//хранит число байт реально считанных потоком                        
                     try
-                    {                    
-                       actual_number_of_bytes = stream.Read(byte_buff, 0, byte_buff.Length);
+                    {
+                        actual_number_of_bytes = stream.Read(byte_buff, 0, byte_buff.Length);
                     }
                     catch (IOException)
                     {
                         MessageBox.Show("Connection Lost! We are trying to reconnect!");
                         Reconnect_to_camera();
                         return; //выходим из функции т.к пользователь разорвал соединение                           
-                    }                  
+                    }
 
                     byte_buff.CopyTo(image_jpeg, jpeg_i);
-                    jpeg_i += actual_number_of_bytes;               
-                   
+                    jpeg_i += actual_number_of_bytes;
+
                     for (int j = 0; j < actual_number_of_bytes - 1; j++)
-                    {                        
+                    {
 
                         if (byte_buff[j] == 0xff && byte_buff[j + 1] == 0xd8)//начало кадра
-                        {                            
-                             start_jpeg_index = j;                          
+                        {
+                            start_jpeg_index = j;
                         }
 
                         if (byte_buff[j] == 0xff && byte_buff[j + 1] == 0xd9)//конец кадра
                         {
                             is_end_of_frame = true;
-                            
+
                         }
                     }
-                }               
+                }
                 image_jpeg = image_jpeg.Skip(start_jpeg_index).ToArray();//пропустим заголовок до начала jpeg кадра
-                
+
                 //Обновим полученную картинку в UI потоке
-                Dispatcher.Invoke(() => 
+                Dispatcher.Invoke(() =>
                 {
                     ImageSource img_source;
                     BitmapImage bmp_img = new BitmapImage();
@@ -131,11 +131,11 @@ namespace WPF_Cameras_Viewer
             }
         }
 
-        public void  Get_list_of_cameras()//Заполняет список доступных камер из XML документа
+        public void Get_list_of_cameras()//Заполняет список доступных камер из XML документа
         {
             XmlDocument xml_doc = new XmlDocument();
             const string configs_url = "http://demo.macroscop.com:8080/configex?login=root";
- 
+
             try
             {
                 xml_doc.Load(configs_url);
@@ -145,7 +145,7 @@ namespace WPF_Cameras_Viewer
                 MessageBox.Show("NO Internet Connection or xml file is damaged! " + ex.Message);
                 return;
             }
-     
+
             var xml_nodes_list = xml_doc.GetElementsByTagName("ChannelInfo");
             for (int i = 0; i < xml_nodes_list.Count; i++)
             {
@@ -157,9 +157,9 @@ namespace WPF_Cameras_Viewer
                     camera_name = camera_name
                 };
                 available_cameras_list.Add(next_elt);
-               
+
                 #if DEBUG
-                Debug.WriteLine(camera_id);  
+                Debug.WriteLine(camera_id);
                 Debug.WriteLine(camera_name);
                 #endif
             }
@@ -196,7 +196,7 @@ namespace WPF_Cameras_Viewer
                         StreamReader stream = new StreamReader(ReceiveStream1, true);
                         var responseFromServer = stream.ReadToEnd();
                         response.Close();
-                        
+
                         Dispatcher.Invoke(() =>//заново вызовем в основном потоке проигрывание стрима
                         {
                             Button_Click_Play(this, null);
@@ -216,9 +216,23 @@ namespace WPF_Cameras_Viewer
                 {
                     MessageBox.Show("We have succesfully reconnected!");
                 }
-                    
-                           
-                
+
+
+
+            });
+        }
+        async void Show_data_and_time()
+        {
+            await Task.Run(() =>
+            {
+                while (true)
+                {
+                    Thread.Sleep(1000);
+                    Dispatcher.Invoke(() =>
+                    {
+                        txtblock_time.Text = DateTime.Now.ToString();
+                    });
+                }                
             });
         }
         public MainWindow()
@@ -246,7 +260,7 @@ namespace WPF_Cameras_Viewer
             Bitmap bmp_r_arrow = Properties.Resources.right_arrow.ToBitmap();
             IntPtr h_bmp_r_arrow = bmp_r_arrow.GetHbitmap();
             img_right_arrow.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_r_arrow, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
+            Show_data_and_time();
         }
 
         private void Button_Click_Play(object sender, RoutedEventArgs e)
@@ -257,7 +271,7 @@ namespace WPF_Cameras_Viewer
                // selected_stream_configs = combox_quality.SelectedIndex > 0?  quality_inf[combox_quality.SelectedIndex] : quality_inf[0];
 
                 URL =  $"http://demo.macroscop.com:8080/mobile?login=root" +
-                    $"&channelid=801e28a4-1711-4ab2-b7fd-a4d9687a471c" +
+                    $"&channelid={current_camera.cam_id_name.camera_id}" +
                     $"&resolutionX={current_camera.cam_stream_inf.X_resolution}" +
                     $"&resolutionY={current_camera.cam_stream_inf.Y_resolution}&fps=25";
                 play_video = new Thread(new ThreadStart(Start_mjpeg_stream));

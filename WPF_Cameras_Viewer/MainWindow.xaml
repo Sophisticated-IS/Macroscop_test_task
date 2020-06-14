@@ -7,6 +7,33 @@
         mc:Ignorable="d"
         Title="Macroscop Cameras Viewer" Height="450" Width="800" Closing="Window_Closing">
 
+    <Window.Resources>
+        <!--Стиль для информации о камере-->
+        <Style x:Key="BigFont_TextBlock_camera_inf_Style">
+            <Setter Property="ItemsControl.FontFamily" Value="Times New Roman"/>
+            <Setter Property="ItemsControl.FontWeight" Value="Bold"/>
+            <Setter Property="ItemsControl.FontSize"   Value="18"/>
+            <Setter Property="ItemsControl.FontStyle" Value="Italic"/>
+            <Setter Property="Panel.ZIndex" Value="2"/>
+        </Style>
+
+
+        <!--Стиль для отображение кнопки Play при наведение мыши-->
+        <Style x:Key="Play_Mouse_hover_Style" TargetType="Button">
+            <Style.Setters>
+                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="FontWeight" Value="ExtraBold"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="Control.IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#FEDF9837"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
@@ -20,8 +47,8 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel Orientation="Horizontal" Panel.ZIndex="2">
-                    <TextBlock Name="Txtblock_camera_name" Text="Название камеры" Panel.ZIndex="2" FontSize="18" FontWeight="Bold" FontStyle="Italic" Foreground="#FFBA00"/>
-                    <TextBlock Name="txtblock_time" Text="28/09/2000 10:30" Margin="10,0,0,0"   FontSize="18" FontWeight="Bold" FontStyle="Italic" Foreground="#06246F"/>
+                    <TextBlock Name="txtblock_camera_name" Text="Название камеры" Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="#FFBA00"/>
+                    <TextBlock Name="txtblock_time" Text="28/09/2000 10:30" Margin="10,0,0,0"   Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="White"/>
                 </StackPanel>
 
                 <Image x:Name="picture" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
@@ -39,10 +66,10 @@
                             <Image Name="img_left_arrow" />
                         </Button.Content>
                     </Button>
-                    <Button Name ="button_play" BorderThickness="0" Margin="50,0,50,0" MinHeight="20px" MinWidth="200" MaxHeight="50px" VerticalAlignment="Stretch" Click="Button_Click_Play" Content="Play" FontSize="16" FontWeight="Bold" >
+                    <Button Name ="button_play" Style="{StaticResource Play_Mouse_hover_Style}" Margin="50,0,50,0" MinHeight="20px" MinWidth="200" MaxHeight="50px" VerticalAlignment="Stretch" Click="Button_Click_Play" Content="Play"  >
                         <Button.Background>
                             <RadialGradientBrush>
-                                <GradientStop Color="#FFDDEAF9" Offset="0.818"/>
+                                <GradientStop Color="#FFD7E4F2" Offset="0.821"/>
                                 <GradientStop Color="White"/>
                                 <GradientStop Color="#FEDF9837" Offset="0.608"/>
                             </RadialGradientBrush>
