@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:WPF_Cameras_Viewer"
         mc:Ignorable="d"
         Title="Macroscop Cameras Viewer" Height="450" Width="800" Closing="Window_Closing">
+
     <Grid Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
@@ -17,21 +18,48 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition MinHeight="50px" MaxHeight="100"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid Grid.Row="0" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel Orientation="Horizontal" Panel.ZIndex="2">
+                    <TextBlock Name="Txtblock_camera_name" Text="Название камеры" Panel.ZIndex="2" FontSize="18" FontWeight="Bold" FontStyle="Italic" Foreground="#FFBA00"/>
+                    <TextBlock Name="txtblock_time" Text="28/09/2000 10:30" Margin="10,0,0,0"   FontSize="18" FontWeight="Bold" FontStyle="Italic" Foreground="#06246F"/>
+                </StackPanel>
+
                 <Image x:Name="picture" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
             </Grid>
             <Grid Grid.Row="1">
-                <StackPanel Orientation="Horizontal">
-                    <Button MinHeight="50px">
+                <ComboBox Name="combox_quality" MinWidth="100px" MaxHeight="50px" HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                    <ComboBoxItem Content="Low"/>
+                    <ComboBoxItem Content="Middle"/>
+                    <ComboBoxItem Content="High"/>
+                </ComboBox>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                    <Button Name="button_left_arrow" BorderThickness="0" Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}" Click="Button_left_arrow_Click" MinHeight="20px" MaxHeight="50px" HorizontalAlignment="Left">
                         <Button.Content>
-                            <Image Name="larrow" Source="WPF_Cameras_Viewer.Properties.Resources.left_arrow">
-                            </Image>
-                        </Button.Content>    
+                            <Image Name="img_left_arrow" />
+                        </Button.Content>
                     </Button>
-                    
-                    <Button MinHeight="50px" VerticalAlignment="Bottom" Click="Button_Click_Play" Content="Play" FontSize="16" FontWeight="Bold"/>
+                    <Button Name ="button_play" BorderThickness="0" Margin="50,0,50,0" MinHeight="20px" MinWidth="200" MaxHeight="50px" VerticalAlignment="Stretch" Click="Button_Click_Play" Content="Play" FontSize="16" FontWeight="Bold" >
+                        <Button.Background>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#FFDDEAF9" Offset="0.818"/>
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="#FEDF9837" Offset="0.608"/>
+                            </RadialGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    <Button Name ="button_right_arrow"  BorderThickness="0"  Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}" Click="Button_right_arrow_Click" MinHeight="20px" MaxHeight="50px">
+                        <Button.Content>
+                            <Image Name="img_right_arrow" />
+                        </Button.Content>
+                    </Button>
                 </StackPanel>
-                
+
+                <ComboBox MinWidth="100px" MaxHeight="50px" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+                    <ComboBoxItem Content="Low"/>
+                    <ComboBoxItem Content="Middle"/>
+                    <ComboBoxItem Content="High"/>
+                </ComboBox>
             </Grid>
         </Grid>
 
