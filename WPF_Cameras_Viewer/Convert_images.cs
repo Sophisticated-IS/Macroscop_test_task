@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Drawing;
+using System.Windows.Interop;
+using System.Windows;
 
 namespace WPF_Cameras_Viewer
 {
@@ -19,6 +22,12 @@ namespace WPF_Cameras_Viewer
             bmp_img.StreamSource = ms;
             bmp_img.EndInit();
             return bmp_img as ImageSource;
+        }
+
+        public ImageSource Convert_to_ImageSource(Bitmap bmp)
+        {
+            IntPtr h_bmp = bmp.GetHbitmap();
+            return Imaging.CreateBitmapSourceFromHBitmap(h_bmp, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
         }
     }
 }

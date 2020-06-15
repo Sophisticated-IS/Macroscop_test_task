@@ -241,20 +241,16 @@ namespace WPF_Cameras_Viewer
             quality_inf_array[2].quality_degree = "High";
             quality_inf_array[2].X_resolution = 1280;
             quality_inf_array[2].Y_resolution = 720;
-
-            //Преобразуем иконки для левой и правой кнопки -стрелочки к ImageSource 
-            Bitmap bmp_l_arrow = Properties.Resources.left_arrow.ToBitmap();
-            IntPtr h_bmp_l_arrow = bmp_l_arrow.GetHbitmap();
-            img_left_arrow.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_l_arrow, IntPtr.Zero, Int32Rect.Empty,BitmapSizeOptions.FromEmptyOptions());
             
-            Bitmap bmp_r_arrow = Properties.Resources.right_arrow.ToBitmap();
-            IntPtr h_bmp_r_arrow = bmp_r_arrow.GetHbitmap();
-            img_right_arrow.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_r_arrow, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            var cnvrt_to_img_source = new Convert_images();
+            //Преобразуем иконки для левой и правой кнопки -стрелочки к ImageSource 
+            img_left_arrow.Source = cnvrt_to_img_source.Convert_to_ImageSource(Properties.Resources.left_arrow.ToBitmap());
+            img_right_arrow.Source = cnvrt_to_img_source.Convert_to_ImageSource(Properties.Resources.right_arrow.ToBitmap());
 
             //Зададим фон по дефолту для стрима 
-             IntPtr h_bmp_stream_background = Properties.Resources.Stream_default_img.GetHbitmap();
-            img_stream_picture.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_stream_background, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
+            img_stream_picture.Source = Imaging.CreateBitmapSourceFromHBitmap(Properties.Resources.Stream_default_img.GetHbitmap(), IntPtr.Zero, 
+                                                                              Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+           
             Show_data_and_time();
 
             // var test = new IP_cameras_list();
