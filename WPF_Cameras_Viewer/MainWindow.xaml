@@ -99,22 +99,22 @@
         
         </Grid>
 
-        <Grid Grid.Column="1" Margin="5,0,5,5">
+        <Grid Grid.Column="1" Margin="5,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <TextBlock Text="Available cameras:" Style="{StaticResource BigFont_TextBlock_camera_inf_Style }" HorizontalAlignment="Left"></TextBlock>
+                <TextBlock Text="Available cameras:"  Style="{StaticResource BigFont_TextBlock_camera_inf_Style }" FontWeight="UltraBold"  HorizontalAlignment="Left"></TextBlock>
             </Grid>
 
             <Grid Grid.Row="1" >
-                <ListView  Name="list_view_availab_cameras" Background="Wheat" SelectionChanged="list_view_availab_cameras_SelectionChanged" >
+                <ListView  Name="list_view_availab_cameras"  Background="Wheat" SelectionChanged="list_view_availab_cameras_SelectionChanged" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UniformGrid >
                                 <StackPanel  Orientation="Vertical">
-                                    <TextBlock Text="{Binding Camera_Name}"  Style="{StaticResource BigFont_TextBlock_camera_inf_Style}"/>
+                                    <TextBlock Text="{Binding Camera_Name}"  Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="DarkBlue"/>
                                     <Image HorizontalAlignment="Left" Source="{Binding Camera_Frame}" MaxWidth="200"  />
                                 </StackPanel>
                             </UniformGrid>

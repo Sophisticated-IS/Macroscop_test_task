@@ -377,7 +377,24 @@ namespace WPF_Cameras_Viewer
 
         private void list_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            throw new  NotImplementedException();
+            var listview = (ListView)sender;
+
+            //Выберем текущей камеру, на которую кликнул пользователь
+            current_camera.camera_order_id = listview.SelectedIndex;
+            current_camera.cam_id_name.camera_id = available_cameras_list.ElementAt(listview.SelectedIndex).camera_id;
+            current_camera.cam_id_name.camera_name = available_cameras_list.ElementAt(listview.SelectedIndex).camera_name;
+
+            if (play_video != null)
+            {
+                play_video.Abort();
+                while (play_video.IsAlive)
+                {
+                    //ждем завершения потока стрима
+                }
+            }
+            else;//поток не создавался
+
+            Button_Click_Play(this, null);
         }
     }
 }
