@@ -6,20 +6,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 //using DirectShowLib;
 
@@ -28,7 +21,11 @@ namespace WPF_Cameras_Viewer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-
+    struct Сamera_id_and_name
+    {
+        public string camera_id; //id камеры по которому мы подключаемся
+        public string camera_name;//название ккамеры 
+    }
     public partial class MainWindow : Window
     {
         readonly Сamera_stream_inf[] quality_inf_array = new Сamera_stream_inf[3];//массив в котором хранятся 3 типа возможных разрешений для стрима
@@ -37,6 +34,7 @@ namespace WPF_Cameras_Viewer
         readonly List<Сamera_id_and_name> available_cameras_list = new List<Сamera_id_and_name>();//список доступных камер из xml документа
         Сurrent_selected_camera current_camera = new Сurrent_selected_camera();//структура камеры с которой стрим вещается в данный момент
         DateTime time_of_last_switch_cam = DateTime.Now;//время последнего переключения камеры
+        
         struct Сamera_stream_inf
         {
             public string quality_degree;//качество стрима 
@@ -44,11 +42,7 @@ namespace WPF_Cameras_Viewer
             public int Y_resolution;
 
         }
-        struct Сamera_id_and_name
-        {
-            public string camera_id; //id камеры по которому мы подключаемся
-            public string camera_name;//название ккамеры 
-        }
+     
         struct Сurrent_selected_camera
         {
             public int camera_order_id;//порядковый индекс в списке конкретной камеры 
@@ -60,8 +54,9 @@ namespace WPF_Cameras_Viewer
         public void Start_mjpeg_stream()//метод для воспроизведения потока mjpeg картинок
         {
             var request = (HttpWebRequest)WebRequest.Create(URL);
-            request.KeepAlive = true;//для более эффективной работы с сетью
+            request.KeepAlive = true;//для поддержки соединения
             Stream stream;
+            Convert_images cnvrt_images = new Convert_images();
             try
             {
                 stream = request.GetResponse().GetResponseStream(); //TODO: System.Net.WEb Exception                
@@ -118,14 +113,8 @@ namespace WPF_Cameras_Viewer
 
                 //Обновим полученную картинку в UI потоке
                 Dispatcher.Invoke(() =>
-                {
-                    ImageSource img_source;
-                    BitmapImage bmp_img = new BitmapImage();
-                    MemoryStream ms = new MemoryStream(image_jpeg, 0, jpeg_i - start_jpeg_index);
-                    bmp_img.BeginInit();
-                    bmp_img.StreamSource = ms;
-                    bmp_img.EndInit();
-                    img_source = bmp_img as ImageSource;
+                {               
+                    var img_source = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index);
                     img_stream_picture.Source = img_source;
                 });
             }
@@ -267,6 +256,9 @@ namespace WPF_Cameras_Viewer
             img_stream_picture.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_stream_background, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
             Show_data_and_time();
+
+            // var test = new IP_cameras_list();
+            // test.test_method(list_view_availab_cameras,available_cameras_list);            
         }
 
         private void Button_Click_Play(object sender, RoutedEventArgs e)

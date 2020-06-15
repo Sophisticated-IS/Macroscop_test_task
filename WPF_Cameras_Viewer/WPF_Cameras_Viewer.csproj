@@ -64,6 +64,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Convert_images.cs" />
+    <Compile Include="IP_cameras_list.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -106,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Stream_default_img.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\no_signal.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
