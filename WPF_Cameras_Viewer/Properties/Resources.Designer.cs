@@ -79,5 +79,15 @@ namespace WPF_Cameras_Viewer.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Stream_default_img {
+            get {
+                object obj = ResourceManager.GetObject("Stream_default_img", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

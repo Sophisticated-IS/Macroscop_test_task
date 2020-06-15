@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Cameras_Viewer"
         mc:Ignorable="d"
-        Title="Macroscop Cameras Viewer" Height="450" Width="800" Closing="Window_Closing">
+        Title="Macroscop Cameras Viewer" Height="450" Width="800"  Closing="Window_Closing">
 
     <Window.Resources>
         <!--Стиль для информации о камере-->
         <Style x:Key="BigFont_TextBlock_camera_inf_Style">
             <Setter Property="ItemsControl.FontFamily" Value="Times New Roman"/>
             <Setter Property="ItemsControl.FontWeight" Value="Bold"/>
-            <Setter Property="ItemsControl.FontSize"   Value="18"/>
+            <Setter Property="ItemsControl.FontSize"   Value="20"/>
             <Setter Property="ItemsControl.FontStyle" Value="Italic"/>
             <Setter Property="Panel.ZIndex" Value="2"/>
         </Style>
@@ -33,6 +33,14 @@
 
             </Style.Triggers>
         </Style>
+
+        <Style TargetType="ComboBox" BasedOn="{StaticResource BigFont_TextBlock_camera_inf_Style}">
+            <Style.Setters>
+                <Setter Property="BorderThickness" Value="0"/>
+             
+            </Style.Setters>
+        </Style>
+        
     </Window.Resources>
     <Grid Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}">
         <Grid.ColumnDefinitions>
@@ -45,20 +53,24 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition MinHeight="50px" MaxHeight="100"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid Grid.Row="0" Margin="10,10,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel Orientation="Horizontal" Panel.ZIndex="2">
-                    <TextBlock Name="txtblock_camera_name" Text="Название камеры" Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="#FFBA00"/>
+                    <TextBlock Name="txtblock_camera_name" Text="Camera's name" Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="#FFD300"/>
                     <TextBlock Name="txtblock_time" Text="28/09/2000 10:30" Margin="10,0,0,0"   Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="White"/>
                 </StackPanel>
 
-                <Image x:Name="picture" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+                <Image x:Name="img_stream_picture" Stretch="Fill"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
             </Grid>
             <Grid Grid.Row="1">
-                <ComboBox Name="combox_quality" MinWidth="100px" MaxHeight="50px" HorizontalAlignment="Left" VerticalAlignment="Stretch">
-                    <ComboBoxItem Content="Low"/>
-                    <ComboBoxItem Content="Middle"/>
-                    <ComboBoxItem Content="High"/>
-                </ComboBox>
+                <Border BorderThickness="1" VerticalAlignment="Top" Margin="10,0,5,0" BorderBrush="Yellow"> </Border>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,5,0,0" >
+                    <TextBlock Text="Quality:" FontSize="14" Foreground="Black" FontWeight="Medium"  />
+                    <ComboBox  Name="combox_quality"  MinWidth="100px" MaxHeight="50px"  BorderThickness="0" Height="auto" SelectionChanged="Combox_quality_SelectionChanged">
+                        <ComboBoxItem Content="Low"/>
+                        <ComboBoxItem Content="Middle"/>
+                        <ComboBoxItem Content="High"/>
+                    </ComboBox>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
                     <Button Name="button_left_arrow" BorderThickness="0" Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}" Click="Button_left_arrow_Click" MinHeight="20px" MaxHeight="50px" HorizontalAlignment="Left">
@@ -81,15 +93,17 @@
                         </Button.Content>
                     </Button>
                 </StackPanel>
-
-                <ComboBox MinWidth="100px" MaxHeight="50px" HorizontalAlignment="Right" VerticalAlignment="Stretch">
-                    <ComboBoxItem Content="Low"/>
-                    <ComboBoxItem Content="Middle"/>
-                    <ComboBoxItem Content="High"/>
-                </ComboBox>
+                
             </Grid>
+        
         </Grid>
 
+        <Grid Grid.Column="1">
+            <TextBlock Text="Available cameras:" Style="{StaticResource BigFont_TextBlock_camera_inf_Style }" HorizontalAlignment="Left"></TextBlock>
+            <ListView Background="Wheat">
+                
+            </ListView>
+        </Grid>
 
     </Grid>
 </Window>

@@ -31,12 +31,12 @@ namespace WPF_Cameras_Viewer
 
     public partial class MainWindow : Window
     {
-        readonly Сamera_stream_inf[] quality_inf = new Сamera_stream_inf[3];//массив в котором хранятся 3 типа возможных разрешений для стрима
+        readonly Сamera_stream_inf[] quality_inf_array = new Сamera_stream_inf[3];//массив в котором хранятся 3 типа возможных разрешений для стрима
         Thread play_video;//поток для проигрывания стрима
         const int times_for_reconnect = 30; //30 раз в течении 30 секунд пытаемся переподключиться
         readonly List<Сamera_id_and_name> available_cameras_list = new List<Сamera_id_and_name>();//список доступных камер из xml документа
-        Сurrent_selected_camera current_camera = new Сurrent_selected_camera();
-        DateTime time_of_last_switch_cam = DateTime.Now;
+        Сurrent_selected_camera current_camera = new Сurrent_selected_camera();//структура камеры с которой стрим вещается в данный момент
+        DateTime time_of_last_switch_cam = DateTime.Now;//время последнего переключения камеры
         struct Сamera_stream_inf
         {
             public string quality_degree;//качество стрима 
@@ -126,7 +126,7 @@ namespace WPF_Cameras_Viewer
                     bmp_img.StreamSource = ms;
                     bmp_img.EndInit();
                     img_source = bmp_img as ImageSource;
-                    picture.Source = img_source;
+                    img_stream_picture.Source = img_source;
                 });
             }
         }
@@ -221,7 +221,7 @@ namespace WPF_Cameras_Viewer
 
             });
         }
-        async void Show_data_and_time()
+        async void Show_data_and_time()//асинхроннный метод - таймер
         {
             await Task.Run(() =>
             {
@@ -241,41 +241,53 @@ namespace WPF_Cameras_Viewer
             Get_list_of_cameras();
            
             //Инициализация массива со списком возможного качества изображения и разрешения 
-            quality_inf[0].quality_degree = "Low";
-            quality_inf[0].X_resolution = 640;
-            quality_inf[0].Y_resolution = 480;
+            quality_inf_array[0].quality_degree = "Low";
+            quality_inf_array[0].X_resolution = 640;
+            quality_inf_array[0].Y_resolution = 480;
             
-            quality_inf[1].quality_degree = "Middle";
-            quality_inf[1].X_resolution = 800;
-            quality_inf[1].Y_resolution = 480;
+            quality_inf_array[1].quality_degree = "Middle";
+            quality_inf_array[1].X_resolution = 800;
+            quality_inf_array[1].Y_resolution = 480;
 
-            quality_inf[2].quality_degree = "High";
-            quality_inf[2].X_resolution = 1280;
-            quality_inf[2].Y_resolution = 720;
+            quality_inf_array[2].quality_degree = "High";
+            quality_inf_array[2].X_resolution = 1280;
+            quality_inf_array[2].Y_resolution = 720;
 
             //Преобразуем иконки для левой и правой кнопки -стрелочки к ImageSource 
             Bitmap bmp_l_arrow = Properties.Resources.left_arrow.ToBitmap();
             IntPtr h_bmp_l_arrow = bmp_l_arrow.GetHbitmap();
             img_left_arrow.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_l_arrow, IntPtr.Zero, Int32Rect.Empty,BitmapSizeOptions.FromEmptyOptions());
+            
             Bitmap bmp_r_arrow = Properties.Resources.right_arrow.ToBitmap();
             IntPtr h_bmp_r_arrow = bmp_r_arrow.GetHbitmap();
             img_right_arrow.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_r_arrow, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+            //Зададим фон по дефолту для стрима 
+             IntPtr h_bmp_stream_background = Properties.Resources.Stream_default_img.GetHbitmap();
+            img_stream_picture.Source = Imaging.CreateBitmapSourceFromHBitmap(h_bmp_stream_background, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
             Show_data_and_time();
         }
 
         private void Button_Click_Play(object sender, RoutedEventArgs e)
         {
             if (play_video == null || !play_video.IsAlive)
-            {
-               // Сamera_stream_inf selected_stream_configs;
-               // selected_stream_configs = combox_quality.SelectedIndex > 0?  quality_inf[combox_quality.SelectedIndex] : quality_inf[0];
-
+            {              
                 URL =  $"http://demo.macroscop.com:8080/mobile?login=root" +
                     $"&channelid={current_camera.cam_id_name.camera_id}" +
                     $"&resolutionX={current_camera.cam_stream_inf.X_resolution}" +
                     $"&resolutionY={current_camera.cam_stream_inf.Y_resolution}&fps=25";
                 play_video = new Thread(new ThreadStart(Start_mjpeg_stream));
                 play_video.Start();
+                
+                //обновим UI 
+                txtblock_camera_name.Text = current_camera.cam_id_name.camera_name;
+                if (combox_quality.SelectedIndex < 0)//если пользователь не выбрал качество то мы ставим низкое по дефолту
+                {
+                    combox_quality.SelectedIndex = 0;
+                }
+                else;//уже было выбрано качество из списка комбобокса
+                
             }
             else;//видео и так уже проигрывается
         }
@@ -332,8 +344,8 @@ namespace WPF_Cameras_Viewer
                 else//идем по кругу т.е. после последней камеры откроем вновь первую из списка
                 {
                     current_camera.camera_order_id = available_cameras_list.Count-1;
-                    current_camera.cam_id_name.camera_id = available_cameras_list.ElementAt(0).camera_id;
-                    current_camera.cam_id_name.camera_name = available_cameras_list.ElementAt(0).camera_name;
+                    current_camera.cam_id_name.camera_id = available_cameras_list.ElementAt(current_camera.camera_order_id).camera_id;
+                    current_camera.cam_id_name.camera_name = available_cameras_list.ElementAt(current_camera.camera_order_id).camera_name;
                 }
 
                 play_video.Abort();
@@ -345,6 +357,42 @@ namespace WPF_Cameras_Viewer
                 time_of_last_switch_cam = DateTime.Now;
             }
             else;//поток не был создан еще следовательно ни одного стрима не было
+        }
+
+
+
+        private void Combox_quality_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = (ComboBox)sender;
+            var selected_Item = (ComboBoxItem)comboBox.SelectedItem;
+            //ищем нужное качество в массиве
+            var quality_inf_elt = Array.Find(quality_inf_array, delegate (Сamera_stream_inf stream_inf) { return stream_inf.quality_degree ==selected_Item.Content.ToString(); });
+
+            if (quality_inf_elt.ToString() != null)
+            {
+                current_camera.cam_stream_inf.quality_degree = quality_inf_elt.quality_degree;
+                current_camera.cam_stream_inf.X_resolution = quality_inf_elt.X_resolution;
+                current_camera.cam_stream_inf.Y_resolution = quality_inf_elt.Y_resolution;
+            }
+            else
+            {
+                //элемент не был найден, следовательно, лучше оставим настройки стрима по дефолту
+            }
+
+            if (play_video != null)
+            {
+                play_video.Abort();
+                while (play_video.IsAlive)
+                {
+                    //ждем завершения стрима
+                }
+
+            }
+            else//поток еще не был запущен и стрима не было ни разу
+            {
+                //значит останавливать текущий стрим не нужно
+            }
+            Button_Click_Play(this, null);
         }
     }
 }
