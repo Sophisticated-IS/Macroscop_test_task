@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.IO;
 using System.Windows.Media.Imaging;
@@ -24,7 +20,7 @@ namespace WPF_Cameras_Viewer
             return bmp_img as ImageSource;
         }
 
-        public ImageSource Convert_to_ImageSource(Bitmap bmp)
+        public ImageSource Convert_to_ImageSource(Bitmap bmp)//преобразует bitmap к ImageSource
         {
             IntPtr h_bmp = bmp.GetHbitmap();
             return Imaging.CreateBitmapSourceFromHBitmap(h_bmp, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());

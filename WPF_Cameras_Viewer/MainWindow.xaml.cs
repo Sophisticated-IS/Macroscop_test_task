@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,10 +10,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
-//using DirectShowLib;
 
 namespace WPF_Cameras_Viewer
 {
@@ -114,8 +111,7 @@ namespace WPF_Cameras_Viewer
                 //Обновим полученную картинку в UI потоке
                 Dispatcher.Invoke(() =>
                 {               
-                    var img_source = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index);
-                    img_stream_picture.Source = img_source;
+                    img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index); ;
                 });
             }
         }
@@ -253,8 +249,8 @@ namespace WPF_Cameras_Viewer
            
             Show_data_and_time();
 
-            // var test = new IP_cameras_list();
-            // test.test_method(list_view_availab_cameras,available_cameras_list);            
+             var test = new IP_cameras_get_picture();
+             test.Load_images_from_ip_cameras(list_view_availab_cameras,available_cameras_list);            
         }
 
         private void Button_Click_Play(object sender, RoutedEventArgs e)

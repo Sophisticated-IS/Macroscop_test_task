@@ -53,19 +53,20 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition MinHeight="50px" MaxHeight="100"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="10,10,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel Orientation="Horizontal" Panel.ZIndex="2">
                     <TextBlock Name="txtblock_camera_name" Text="Camera's name" Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="#FFD300"/>
                     <TextBlock Name="txtblock_time" Text="28/09/2000 10:30" Margin="10,0,0,0"   Style="{StaticResource BigFont_TextBlock_camera_inf_Style}" Foreground="White"/>
                 </StackPanel>
 
                 <Image x:Name="img_stream_picture" Stretch="Fill"  HorizontalAlignment="Center" VerticalAlignment="Center" ></Image>
+                <Border BorderThickness="1" BorderBrush="Yellow" HorizontalAlignment="Right"></Border>
             </Grid>
             <Grid Grid.Row="1">
-                <Border BorderThickness="1" VerticalAlignment="Top" Margin="10,0,5,0" BorderBrush="Yellow"> </Border>
+                <Border BorderThickness="1" VerticalAlignment="Top"  BorderBrush="Yellow"> </Border>
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,5,0,0" >
                     <TextBlock Text="Quality:" FontSize="14" Foreground="Black" FontWeight="Medium"  />
-                    <ComboBox  Name="combox_quality"  MinWidth="100px" MaxHeight="50px"  BorderThickness="0" Height="auto" SelectionChanged="Combox_quality_SelectionChanged">
+                    <ComboBox  Name="combox_quality"  MinWidth="100px" MaxHeight="50px" Margin="0,0,5,0" BorderThickness="0" Height="auto" SelectionChanged="Combox_quality_SelectionChanged">
                         <ComboBoxItem Content="Low"/>
                         <ComboBoxItem Content="Middle"/>
                         <ComboBoxItem Content="High"/>
@@ -112,7 +113,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UniformGrid >
-                                <StackPanel  Orientation="Vertical" CanHorizontallyScroll="False">
+                                <StackPanel  Orientation="Vertical">
                                     <TextBlock Text="{Binding Camera_Name}"  Style="{StaticResource BigFont_TextBlock_camera_inf_Style}"/>
                                     <Image Source="{Binding Camera_Frame}" MaxWidth="200"  />
                                 </StackPanel>
