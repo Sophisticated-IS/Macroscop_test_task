@@ -109,7 +109,7 @@
             </Grid>
 
             <Grid Grid.Row="1" >
-                <ListView  Name="list_view_availab_cameras"  Background="Wheat" SelectionChanged="list_view_availab_cameras_SelectionChanged" >
+                <ListView  Name="list_view_availab_cameras"  Background="Wheat" SelectionChanged="List_view_availab_cameras_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UniformGrid >

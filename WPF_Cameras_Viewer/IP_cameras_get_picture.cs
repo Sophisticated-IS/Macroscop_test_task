@@ -93,7 +93,7 @@ namespace WPF_Cameras_Viewer
                     }
 
                 }
-
+                
                 foreach (var name_and_frame in list_cam_name_and_frame) 
                 {
                     list_view_availab_cameras.Items.Add(new { name_and_frame.Camera_Name, name_and_frame.Camera_Frame });
@@ -109,7 +109,7 @@ namespace WPF_Cameras_Viewer
 
         }
 
-        private async void try_to_recconect_to_not_responding_cameras()//TODO: дописать
+        private async void Try_to_recconect_to_not_responding_cameras()//TODO: дописать
         {
             await Task.Run(() =>
             {

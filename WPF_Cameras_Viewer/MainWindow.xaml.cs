@@ -25,13 +25,14 @@ namespace WPF_Cameras_Viewer
     }
     public partial class MainWindow : Window
     {
+        string URL = "http://demo.macroscop.com:8080/mobile?login=root&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&resolutionX=640&resolutionY=480&fps=25";
         readonly Сamera_stream_inf[] quality_inf_array = new Сamera_stream_inf[3];//массив в котором хранятся 3 типа возможных разрешений для стрима
         Thread play_video;//поток для проигрывания стрима
         const int times_for_reconnect = 30; //30 раз в течении 30 секунд пытаемся переподключиться
         readonly List<Сamera_id_and_name> available_cameras_list = new List<Сamera_id_and_name>();//список доступных камер из xml документа
         Сurrent_selected_camera current_camera = new Сurrent_selected_camera();//структура камеры с которой стрим вещается в данный момент
         DateTime time_of_last_switch_cam = DateTime.Now;//время последнего переключения камеры
-        
+        const int switch_cameras_delay = 2;
         struct Сamera_stream_inf
         {
             public string quality_degree;//качество стрима 
@@ -47,7 +48,7 @@ namespace WPF_Cameras_Viewer
             public Сamera_stream_inf cam_stream_inf;
         }
 
-        string URL = "http://demo.macroscop.com:8080/mobile?login=root&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&resolutionX=640&resolutionY=480&fps=25";
+      
         public void Start_mjpeg_stream()//метод для воспроизведения потока mjpeg картинок
         {
             var request = (HttpWebRequest)WebRequest.Create(URL);
@@ -186,7 +187,7 @@ namespace WPF_Cameras_Viewer
                     }
                     catch (Exception)
                     {
-                        Task.Delay(1000);
+                        Thread.Sleep(1000);
                     }
                 }
                 if (i == times_for_reconnect)
@@ -204,17 +205,11 @@ namespace WPF_Cameras_Viewer
         }
         async void Show_data_and_time()//асинхроннный метод - таймер
         {
-            await Task.Run(() =>
+            while (true)
             {
-                while (true)
-                {
-                   Task.Delay(1000);
-                    Dispatcher.Invoke(() =>
-                    {
-                        txtblock_time.Text = DateTime.Now.ToString();
-                    });
-                }                
-            });
+                await Task.Delay(400);
+                txtblock_time.Text = DateTime.Now.ToString();
+            }
         }
         public MainWindow()
         {
@@ -283,7 +278,7 @@ namespace WPF_Cameras_Viewer
         private void Button_right_arrow_Click(object sender, RoutedEventArgs e)
         {
             
-            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds>=3)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий               
+            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds>=switch_cameras_delay)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий               
             {
 
                 if (current_camera.camera_order_id < available_cameras_list.Count - 1)
@@ -313,7 +308,7 @@ namespace WPF_Cameras_Viewer
 
         private void Button_left_arrow_Click(object sender, RoutedEventArgs e)
         {
-            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= 3)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий
+            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий
             {
                 if (current_camera.camera_order_id > 0)
                 {
@@ -375,26 +370,39 @@ namespace WPF_Cameras_Viewer
             Button_Click_Play(this, null);
         }
 
-        private void list_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)//TODO: СДЕЛАТЬ ЗАДЕРЖКУ ДЛЯ ОЧЧЕНЬ ЧАСТЫХ КЛИКОВ
+        private void List_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)//TODO: СДЕЛАТЬ ЗАДЕРЖКУ ДЛЯ ОЧЧЕНЬ ЧАСТЫХ КЛИКОВ
         {
             var listview = (ListView)sender;
-
-            //Выберем текущей камеру, на которую кликнул пользователь
-            current_camera.camera_order_id = listview.SelectedIndex;
-            current_camera.cam_id_name.camera_id = available_cameras_list.ElementAt(listview.SelectedIndex).camera_id;
-            current_camera.cam_id_name.camera_name = available_cameras_list.ElementAt(listview.SelectedIndex).camera_name;
-
-            if (play_video != null)
+            if (DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay)
             {
-                play_video.Abort();
-                while (play_video.IsAlive)
-                {
-                    //ждем завершения потока стрима
-                }
-            }
-            else;//поток не создавался
 
-            Button_Click_Play(this, null);
+                //Выберем текущей камеру, на которую кликнул пользователь
+                current_camera.camera_order_id = listview.SelectedIndex;
+                current_camera.cam_id_name.camera_id = available_cameras_list.ElementAt(listview.SelectedIndex).camera_id;
+                current_camera.cam_id_name.camera_name = available_cameras_list.ElementAt(listview.SelectedIndex).camera_name;
+
+                if (play_video != null)
+                {
+                    play_video.Abort();
+                    while (play_video.IsAlive)
+                    {
+                        //ждем завершения потока стрима
+                    }
+                }
+                else;//поток не создавался
+
+                Button_Click_Play(this, null);
+                time_of_last_switch_cam = DateTime.Now;
+            }
+            else//мы не реагируем на такие частые клики
+            {
+               
+           
+            }
+    
+
         }
+
+  
     }
 }
