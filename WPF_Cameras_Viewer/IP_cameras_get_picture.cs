@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +20,8 @@ namespace WPF_Cameras_Viewer
       struct Сamera_name_and_frame{
             public string Camera_Name;
             public ImageSource Camera_Frame; 
-      }         
+      }
+        private const int camera_interrogation_rate_ms = 30000;
         public void  Load_images_from_ip_cameras(ListView list_view_availab_cameras, List<Сamera_id_and_name> available_cameras)//опрашивает каждую камеру из списка доступных и получает с неё изображение, в конце обновляя UI
         {
             if (available_cameras.Count > 0)
@@ -36,7 +38,7 @@ namespace WPF_Cameras_Viewer
 
                     try
                     {
-                        stream = request.GetResponse().GetResponseStream(); //TODO: System.Net.WEb Exception                
+                        stream = request.GetResponse().GetResponseStream();           
                         var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера
                         var image_jpeg = new byte[170000];//Размер после сжатия примерно - 160 Кб берем буфер под макс разрешение в сжатом виде MJPEG 1280*720 * 24;  Степень сжатия 17.4
                         int jpeg_i = 0;//индекс для движения по массиву  image_jpeg
@@ -104,13 +106,22 @@ namespace WPF_Cameras_Viewer
                 //TODO: Доработать и подумать что делать если ни одна камера не отвечает
                 //throw new Exception("Нет доступных камер!");
             }
-            
 
-            //опросили и заполнили лист
-            
-   
-       //list_view_availab_cameras.ItemsSource = new[] { new { Camera_Name = "camera1", Camera_Frame =img_s  }, new { Camera_Name = "camera2", Camera_Frame = img_s } };
+        }
 
+        private async void try_to_recconect_to_not_responding_cameras()//TODO: дописать
+        {
+            await Task.Run(() =>
+            {
+                bool all_cameras_online = false;
+
+                while (!all_cameras_online)
+                {
+                   Task.Delay(camera_interrogation_rate_ms);
+
+                }
+
+            });
         }
     }
 }

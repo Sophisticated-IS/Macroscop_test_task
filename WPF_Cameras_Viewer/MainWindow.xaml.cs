@@ -186,7 +186,7 @@ namespace WPF_Cameras_Viewer
                     }
                     catch (Exception)
                     {
-                        Thread.Sleep(1000);
+                        Task.Delay(1000);
                     }
                 }
                 if (i == times_for_reconnect)
@@ -208,7 +208,7 @@ namespace WPF_Cameras_Viewer
             {
                 while (true)
                 {
-                    Thread.Sleep(1000);
+                   Task.Delay(1000);
                     Dispatcher.Invoke(() =>
                     {
                         txtblock_time.Text = DateTime.Now.ToString();
@@ -375,7 +375,7 @@ namespace WPF_Cameras_Viewer
             Button_Click_Play(this, null);
         }
 
-        private void list_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void list_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)//TODO: СДЕЛАТЬ ЗАДЕРЖКУ ДЛЯ ОЧЧЕНЬ ЧАСТЫХ КЛИКОВ
         {
             var listview = (ListView)sender;
 
