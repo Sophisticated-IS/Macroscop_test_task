@@ -99,7 +99,7 @@
         
         </Grid>
 
-        <Grid Grid.Column="1" Margin="0,0,10,0">
+        <Grid Grid.Column="1" Margin="5,0,5,5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
@@ -109,13 +109,13 @@
             </Grid>
 
             <Grid Grid.Row="1" >
-                <ListView  Name="list_view_availab_cameras" Background="Wheat" >
+                <ListView  Name="list_view_availab_cameras" Background="Wheat" SelectionChanged="list_view_availab_cameras_SelectionChanged" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UniformGrid >
                                 <StackPanel  Orientation="Vertical">
                                     <TextBlock Text="{Binding Camera_Name}"  Style="{StaticResource BigFont_TextBlock_camera_inf_Style}"/>
-                                    <Image Source="{Binding Camera_Frame}" MaxWidth="200"  />
+                                    <Image HorizontalAlignment="Left" Source="{Binding Camera_Frame}" MaxWidth="200"  />
                                 </StackPanel>
                             </UniformGrid>
                         </DataTemplate>

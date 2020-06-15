@@ -143,10 +143,6 @@ namespace WPF_Cameras_Viewer
                 };
                 available_cameras_list.Add(next_elt);
 
-                #if DEBUG
-                Debug.WriteLine(camera_id);
-                Debug.WriteLine(camera_name);
-                #endif
             }
 
             if (available_cameras_list.Count > 0)
@@ -377,6 +373,11 @@ namespace WPF_Cameras_Viewer
                 //значит останавливать текущий стрим не нужно
             }
             Button_Click_Play(this, null);
+        }
+
+        private void list_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            throw new  NotImplementedException();
         }
     }
 }
