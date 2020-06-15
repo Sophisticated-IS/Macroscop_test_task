@@ -57,7 +57,7 @@ namespace WPF_Cameras_Viewer
             Convert_images cnvrt_images = new Convert_images();
             try
             {
-                stream = request.GetResponse().GetResponseStream(); //TODO: System.Net.WEb Exception                
+                stream = request.GetResponse().GetResponseStream();             
             }
             catch (WebException)
             {
@@ -370,7 +370,7 @@ namespace WPF_Cameras_Viewer
             Button_Click_Play(this, null);
         }
 
-        private void List_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)//TODO: СДЕЛАТЬ ЗАДЕРЖКУ ДЛЯ ОЧЧЕНЬ ЧАСТЫХ КЛИКОВ
+        private void List_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listview = (ListView)sender;
             if (DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay)
@@ -396,13 +396,11 @@ namespace WPF_Cameras_Viewer
             }
             else//мы не реагируем на такие частые клики
             {
-               
-           
+                listview.SelectedIndex = current_camera.camera_order_id; // вернем обратно на ту камеру которая была выбрана           
             }
     
-
         }
 
-  
+   //TODO: сделать переключение кнопками
     }
 }
