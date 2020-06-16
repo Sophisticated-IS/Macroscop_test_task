@@ -92,7 +92,7 @@ namespace WPF_Cameras_Viewer
                     {
                         byte_buff.CopyTo(jpeg_frame, jpeg_i);
                     }
-                    catch (IndexOutOfRangeException)
+                    catch (ArgumentException)
                     {
                         is_bad_image = true;
                         break;//выйдем из обработки кадра так как он ошибочно передался по сети
