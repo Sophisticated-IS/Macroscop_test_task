@@ -34,8 +34,8 @@ namespace WPF_Cameras_Viewer
                                  $"{available_cameras.ElementAt(i).camera_id}&resolutionX=640&resolutionY=480&fps=25";
 
                     var request = (HttpWebRequest)WebRequest.Create(URL);
+                    request.Timeout = 10000;
                     Stream stream;
-
                     try
                     {
                         stream = request.GetResponse().GetResponseStream();           
@@ -109,7 +109,7 @@ namespace WPF_Cameras_Viewer
 
         }
 
-        private async void Try_to_recconect_to_not_responding_cameras()//TODO: дописать
+        private async void Try_to_recconect_to_not_responding_cameras()//пытается опросить камеры, которые не отвечали при загрузке программы TODO: дописать
         {
             await Task.Run(() =>
             {

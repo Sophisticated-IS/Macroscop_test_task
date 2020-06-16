@@ -48,7 +48,6 @@ namespace WPF_Cameras_Viewer
             public Сamera_stream_inf cam_stream_inf;
         }
 
-      
         public void Start_mjpeg_stream()//метод для воспроизведения потока mjpeg картинок
         {
             var request = (HttpWebRequest)WebRequest.Create(URL);
@@ -65,11 +64,11 @@ namespace WPF_Cameras_Viewer
                 Reconnect_to_camera();
                 return;//выходим из функции так как сервер не отвечает
             }
-
+            var jpeg_frame = new byte[180000];// MJPEG 1280*720 * 24 /15.4(compression) = 1 436 260/8 = 180 000 byte; Степень сжатия 15.4
             while (true)
             {
                 var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера
-                var image_jpeg = new byte[170000];//Размер после сжатия примерно - 160 Кб берем буфер под макс разрешение в сжатом виде MJPEG 1280*720 * 24;  Степень сжатия 17.4
+                var jpeg_skipped_header = new byte[180000];//байты jpeg картинки без заголовка
                 int jpeg_i = 0;//индекс для движения по массиву  image_jpeg
                 int start_jpeg_index = 0;//индекс байтов начала 0xff 0xd8
 
@@ -89,7 +88,7 @@ namespace WPF_Cameras_Viewer
                         return; //выходим из функции т.к пользователь разорвал соединение                           
                     }
 
-                    byte_buff.CopyTo(image_jpeg, jpeg_i);
+                    byte_buff.CopyTo(jpeg_frame, jpeg_i);
                     jpeg_i += actual_number_of_bytes;
 
                     for (int j = 0; j < actual_number_of_bytes - 1; j++)
@@ -106,13 +105,15 @@ namespace WPF_Cameras_Viewer
 
                         }
                     }
-                }
-                image_jpeg = image_jpeg.Skip(start_jpeg_index).ToArray();//пропустим заголовок до начала jpeg кадра
-
+                }  
+                
+                //пропустим заголовок у jpeg кадра
+                Array.Copy(jpeg_frame, start_jpeg_index, jpeg_skipped_header, 0,jpeg_skipped_header.Length-start_jpeg_index);           
+                
                 //Обновим полученную картинку в UI потоке
                 Dispatcher.Invoke(() =>
-                {               
-                    img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index); ;
+                {
+                    img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i); ;
                 });
             }
         }
