@@ -32,8 +32,9 @@ namespace WPF_Cameras_Viewer
         readonly List<Сamera_id_and_name> available_cameras_list = new List<Сamera_id_and_name>();//список доступных камер из xml документа
         Сurrent_selected_camera current_camera = new Сurrent_selected_camera();//структура камеры с которой стрим вещается в данный момент
         DateTime time_of_last_switch_cam = DateTime.Now;//время последнего переключения камеры
-        const int switch_cameras_delay = 2;
-        struct Сamera_stream_inf
+        const int switch_cameras_delay = 2;//задержка между перключениями камеры
+        bool we_already_trying_reconnect = false;
+        struct Сamera_stream_inf//структура описывающая возможное качество стрима
         {
             public string quality_degree;//качество стрима 
             public int X_resolution;//разрешение X и Y
@@ -41,7 +42,7 @@ namespace WPF_Cameras_Viewer
 
         }
      
-        struct Сurrent_selected_camera
+        struct Сurrent_selected_camera//структура описывающая стрим для камеры выбранной в данный момент
         {
             public int camera_order_id;//порядковый индекс в списке конкретной камеры 
             public Сamera_id_and_name cam_id_name;
@@ -121,7 +122,7 @@ namespace WPF_Cameras_Viewer
                     //Обновим полученную картинку в UI потоке
                     Dispatcher.Invoke(() =>
                     {
-                        img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i); ;
+                        img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i);
                     });
                 }
                 else;//пропустим картинку
@@ -130,51 +131,60 @@ namespace WPF_Cameras_Viewer
 
         public void Get_list_of_cameras()//Заполняет список доступных камер из XML документа
         {
-            XmlDocument xml_doc = new XmlDocument();
-            const string configs_url = "http://demo.macroscop.com:8080/configex?login=root";
+               bool at_least_one_camera_is_available_on_server = false;
+               while (!at_least_one_camera_is_available_on_server)
+               {
+                   XmlDocument xml_doc = new XmlDocument();
+                   const string configs_url = "http://demo.macroscop.com:8080/configex?login=root";
 
-            try
-            {
-                xml_doc.Load(configs_url);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("NO Internet Connection or xml file is damaged! " + ex.Message);
-                return;
-            }
+                   try
+                   {
+                       xml_doc.Load(configs_url);
+                   }
+                   catch (Exception ex)
+                   {
+                       MessageBox.Show("NO Internet Connection or xml file is damaged! " + ex.Message);
+                       return;
+                   }
 
-            var xml_nodes_list = xml_doc.GetElementsByTagName("ChannelInfo");
-            for (int i = 0; i < xml_nodes_list.Count; i++)
-            {
-                string camera_id = xml_nodes_list[i].Attributes.GetNamedItem("Id").Value;
-                string camera_name = xml_nodes_list[i].Attributes.GetNamedItem("Name").Value;
-                var next_elt = new Сamera_id_and_name
-                {
-                    camera_id = camera_id,
-                    camera_name = camera_name
-                };
-                available_cameras_list.Add(next_elt);
+                   var xml_nodes_list = xml_doc.GetElementsByTagName("ChannelInfo");
+                   for (int i = 0; i < xml_nodes_list.Count; i++)
+                   {
+                       string camera_id = xml_nodes_list[i].Attributes.GetNamedItem("Id").Value;
+                       string camera_name = xml_nodes_list[i].Attributes.GetNamedItem("Name").Value;
+                       var next_elt = new Сamera_id_and_name
+                       {
+                           camera_id = camera_id,
+                           camera_name = camera_name
+                       };
+                       available_cameras_list.Add(next_elt);
 
-            }
+                   }
 
-            if (available_cameras_list.Count > 0)
-            {
-                current_camera.camera_order_id = 0;//индекс 0 так как мы инициализируем текущую камеру как первую из списка всех доступных
+                   if (available_cameras_list.Count > 0)
+                   {
+                       at_least_one_camera_is_available_on_server = true;
 
-                current_camera.cam_id_name.camera_id = available_cameras_list.First().camera_id;
-                current_camera.cam_id_name.camera_name = available_cameras_list.First().camera_name;
+                       current_camera.camera_order_id = 0;//индекс 0 так как мы инициализируем текущую камеру как первую из списка всех доступных
 
-                current_camera.cam_stream_inf.quality_degree = "Low";
-                current_camera.cam_stream_inf.X_resolution = 640;
-                current_camera.cam_stream_inf.Y_resolution = 480;
-            }
-            else
-            {
-                MessageBox.Show("We have not found available cameras");
-            }
+                       current_camera.cam_id_name.camera_id = available_cameras_list.First().camera_id;
+                       current_camera.cam_id_name.camera_name = available_cameras_list.First().camera_name;
+
+                       current_camera.cam_stream_inf.quality_degree = "Low";
+                       current_camera.cam_stream_inf.X_resolution = 640;
+                       current_camera.cam_stream_inf.Y_resolution = 480;
+                   }
+                   else
+                   {
+                       MessageBox.Show("We have not found available cameras");
+
+                   }
+               }
+
         }
         async void Reconnect_to_camera()//асинхронный метод для восстановления соединения  при потери 
         {
+            we_already_trying_reconnect = true;
             await Task.Run(() =>
             {
                 int i = 0;
@@ -192,6 +202,7 @@ namespace WPF_Cameras_Viewer
 
                         Dispatcher.Invoke(() =>//заново вызовем в основном потоке проигрывание стрима
                         {
+                            we_already_trying_reconnect = false;
                             Button_Click_Play(this, null);
                         });
                         break;
@@ -209,9 +220,6 @@ namespace WPF_Cameras_Viewer
                 {
                     MessageBox.Show("We have succesfully reconnected!");
                 }
-
-
-
             });
         }
         async void Show_data_and_time()//асинхроннный метод - таймер
@@ -225,7 +233,7 @@ namespace WPF_Cameras_Viewer
         public MainWindow()
         {
             InitializeComponent();
-            Get_list_of_cameras();
+            Get_list_of_cameras();//парсим xml документ чтобы получить список камер
            
             //Инициализация массива со списком возможного качества изображения и разрешения 
             quality_inf_array[0].quality_degree = "Low";
@@ -250,14 +258,15 @@ namespace WPF_Cameras_Viewer
                                                                               Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
            
             Show_data_and_time();
-
-             var test = new IP_cameras_get_picture();
-             test.Load_images_from_ip_cameras(list_view_availab_cameras,available_cameras_list);            
+            
+            //Загрузим превью для каждой камеры
+             var get_picture_from_each_cam = new IP_cameras_get_picture();
+             get_picture_from_each_cam.Load_images_from_ip_cameras(list_view_availab_cameras,available_cameras_list,Dispatcher);            
         }
 
         private void Button_Click_Play(object sender, RoutedEventArgs e)
         {
-            if (play_video == null || !play_video.IsAlive)
+            if ( play_video == null ||(!play_video.IsAlive && !we_already_trying_reconnect) )
             {              
                 URL =  $"http://demo.macroscop.com:8080/mobile?login=root" +
                     $"&channelid={current_camera.cam_id_name.camera_id}" +
@@ -289,7 +298,7 @@ namespace WPF_Cameras_Viewer
         private void Button_right_arrow_Click(object sender, RoutedEventArgs e)
         {
             
-            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds>=switch_cameras_delay)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий               
+            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds>=switch_cameras_delay && !we_already_trying_reconnect)             
             {
 
                 if (current_camera.camera_order_id < available_cameras_list.Count - 1)
@@ -319,7 +328,7 @@ namespace WPF_Cameras_Viewer
 
         private void Button_left_arrow_Click(object sender, RoutedEventArgs e)
         {
-            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий
+            if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay &&!we_already_trying_reconnect)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий
             {
                 if (current_camera.camera_order_id > 0)
                 {
@@ -384,7 +393,7 @@ namespace WPF_Cameras_Viewer
         private void List_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listview = (ListView)sender;
-            if (DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay)
+            if (DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay && !we_already_trying_reconnect)
             {
 
                 //Выберем текущей камеру, на которую кликнул пользователь
@@ -405,7 +414,7 @@ namespace WPF_Cameras_Viewer
                 Button_Click_Play(this, null);
                 time_of_last_switch_cam = DateTime.Now;
             }
-            else//мы не реагируем на такие частые клики
+            else//мы не реагируем на такие частые клики или ждем переподключения
             {
                 listview.SelectedIndex = current_camera.camera_order_id; // вернем обратно на ту камеру которая была выбрана           
             }
