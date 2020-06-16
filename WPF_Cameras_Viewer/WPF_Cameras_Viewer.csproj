@@ -57,7 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="MainWindow_Cameras_Viewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -67,8 +67,8 @@
     </Compile>
     <Compile Include="Convert_images.cs" />
     <Compile Include="IP_cameras_get_picture.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="MainWindow_Cameras_Viewer.xaml.cs">
+      <DependentUpon>MainWindow_Cameras_Viewer.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -103,9 +103,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\right_arrow.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Image1.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Stream_default_img.png" />
