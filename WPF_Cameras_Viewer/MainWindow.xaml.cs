@@ -64,7 +64,7 @@ namespace WPF_Cameras_Viewer
                 Reconnect_to_camera();
                 return;//выходим из функции так как сервер не отвечает
             }
-            var jpeg_frame = new byte[180000];// MJPEG 1280*720 * 24 /15.4(compression) = 1 436 260/8 = 180 000 byte; Степень сжатия 15.4
+            var jpeg_frame = new byte[180000];// MJPEG 1280*720 * 24 /15.4(compression) = 1 436 260/8 = 180 000 bytes; Степень сжатия 15.4
             while (true)
             {
                 var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера

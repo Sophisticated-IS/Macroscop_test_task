@@ -40,7 +40,7 @@ namespace WPF_Cameras_Viewer
                     {
                         stream = request.GetResponse().GetResponseStream();           
                         var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера
-                        var image_jpeg = new byte[170000];//Размер после сжатия примерно - 160 Кб берем буфер под макс разрешение в сжатом виде MJPEG 1280*720 * 24;  Степень сжатия 17.4
+                        var image_jpeg = new byte[60000];// 640*480 * 24 /15.4 /8 = 60 000 bytes;  Степень сжатия 17.4
                         int jpeg_i = 0;//индекс для движения по массиву  image_jpeg
                         int start_jpeg_index = 0;//индекс байта 0xff из двух байтов начала 0xff 0xd8
 
