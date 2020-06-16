@@ -34,10 +34,10 @@
             </Style.Triggers>
         </Style>
 
+        <!--Стиль для combobox (выбора качества)-->
         <Style TargetType="ComboBox" BasedOn="{StaticResource BigFont_TextBlock_camera_inf_Style}">
             <Style.Setters>
                 <Setter Property="BorderThickness" Value="0"/>
-
             </Style.Setters>
         </Style>
 
@@ -117,7 +117,7 @@
             </Grid>
 
             <Grid Grid.Row="1" >
-                <ListView  Name="list_view_availab_cameras"  Background="Wheat" SelectionChanged="List_view_availab_cameras_SelectionChanged">
+                <ListView  Name="list_view_availab_cameras"  Background="Wheat" SelectionChanged="List_view_available_cameras_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UniformGrid >

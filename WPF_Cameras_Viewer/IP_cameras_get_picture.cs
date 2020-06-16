@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,11 +16,12 @@ namespace WPF_Cameras_Viewer
 {
     class IP_cameras_get_picture//Опрашивает все камеры, получая с них изображение для отображение в UI 
     {
-      struct Сamera_name_and_frame{
+      struct Сamera_name_and_frame//структура названия камеры и изображения с неё
+      {
             public string Camera_Name;
             public ImageSource Camera_Frame; 
       }
-        private const int camera_interrogation_rate_ms = 5000;
+        private const int camera_interrogation_rate_ms = 5000;//задает частоту опроса камер, которые находятся не в сети 
         public void  Load_images_from_ip_cameras(ListView list_view_availab_cameras, List<Сamera_id_and_name> available_cameras,Dispatcher Dispatcher)//опрашивает каждую камеру из списка доступных и получает с неё изображение, в конце обновляя UI
         {
                 bool all_cameras_online = true;
@@ -45,11 +44,11 @@ namespace WPF_Cameras_Viewer
                         {
                             stream = request.GetResponse().GetResponseStream();
                             var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера
-                            var image_jpeg = new byte[60000];// 640*480 * 24 /15.4 /8 = 60 000 bytes;  Степень сжатия 17.4
+                            var image_jpeg = new byte[60000];// 640*480 * 24 /15.4 /8 = 60 000 bytes;  Степень сжатия 15.4
                             int jpeg_i = 0;//индекс для движения по массиву  image_jpeg
                             int start_jpeg_index = 0;//индекс байта 0xff из двух байтов начала 0xff 0xd8
 
-                            bool is_end_of_frame = false;
+                            bool is_end_of_frame = false;//встретились ли байты конца 0xff 0xd9
                             while (!is_end_of_frame)
                             {
                                 int actual_number_of_bytes = 0;//хранит число байт реально считанных потоком                        
@@ -184,8 +183,6 @@ namespace WPF_Cameras_Viewer
 
                     Thread.Sleep(camera_interrogation_rate_ms);
                 }
-         
-                
 
             });
         }

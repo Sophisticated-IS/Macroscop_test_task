@@ -34,13 +34,12 @@ namespace WPF_Cameras_Viewer
         Сurrent_selected_camera current_camera = new Сurrent_selected_camera();//структура камеры с которой стрим вещается в данный момент
         DateTime time_of_last_switch_cam = DateTime.Now;//время последнего переключения камеры
         const int switch_cameras_delay = 2;//задержка между перключениями камеры
-        bool we_already_trying_reconnect = false;
+        bool we_already_trying_reconnect = false;//индикатор для проверки  производится ли уже переподключение после потери сигнала
         struct Сamera_stream_inf//структура описывающая возможное качество стрима
         {
             public string quality_degree;//качество стрима 
-            public int X_resolution;//разрешение X и Y
-            public int Y_resolution;
-
+            public int X_resolution;//разрешение X 
+            public int Y_resolution;//и Y
         }
      
         struct Сurrent_selected_camera//структура описывающая стрим для камеры выбранной в данный момент
@@ -171,6 +170,7 @@ namespace WPF_Cameras_Viewer
                        current_camera.cam_id_name.camera_id = available_cameras_list.First().camera_id;
                        current_camera.cam_id_name.camera_name = available_cameras_list.First().camera_name;
 
+                       //по дефолту стрим в низком качестве
                        current_camera.cam_stream_inf.quality_degree = "Low";
                        current_camera.cam_stream_inf.X_resolution = 640;
                        current_camera.cam_stream_inf.Y_resolution = 480;
@@ -235,20 +235,12 @@ namespace WPF_Cameras_Viewer
         {
             InitializeComponent();
             Get_list_of_cameras();//парсим xml документ чтобы получить список камер
-           
-            //Инициализация массива со списком возможного качества изображения и разрешения 
-            quality_inf_array[0].quality_degree = "Low";
-            quality_inf_array[0].X_resolution = 640;
-            quality_inf_array[0].Y_resolution = 480;
-            
-            quality_inf_array[1].quality_degree = "Middle";
-            quality_inf_array[1].X_resolution = 800;
-            quality_inf_array[1].Y_resolution = 480;
 
-            quality_inf_array[2].quality_degree = "High";
-            quality_inf_array[2].X_resolution = 1280;
-            quality_inf_array[2].Y_resolution = 720;
-            
+            //Инициализация массива со списком возможного качества изображения и разрешения 
+            quality_inf_array[0] = new Сamera_stream_inf { quality_degree = "Low",    X_resolution = 640,  Y_resolution = 480 };
+            quality_inf_array[1] = new Сamera_stream_inf { quality_degree = "Middle", X_resolution = 800,  Y_resolution = 480 };
+            quality_inf_array[2] = new Сamera_stream_inf { quality_degree = "High",   X_resolution = 1280, Y_resolution = 720 };
+          
             var cnvrt_to_img_source = new Convert_images();
             //Преобразуем иконки для левой и правой кнопки -стрелочки к ImageSource 
             img_left_arrow.Source = cnvrt_to_img_source.Convert_to_ImageSource(Properties.Resources.left_arrow.ToBitmap());
@@ -265,7 +257,7 @@ namespace WPF_Cameras_Viewer
              get_picture_from_each_cam.Load_images_from_ip_cameras(list_view_availab_cameras,available_cameras_list,Dispatcher);            
         }
 
-        private void Button_Click_Play(object sender, RoutedEventArgs e)
+        private void Button_Click_Play(object sender, RoutedEventArgs e)//обработчик нажатия кнопки PLAY (запуска стрима)
         {
             if ( play_video == null ||(!play_video.IsAlive && !we_already_trying_reconnect) )
             {              
@@ -288,7 +280,7 @@ namespace WPF_Cameras_Viewer
             else;//видео и так уже проигрывается
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)//обработчик закрытия окна
         {
             if (play_video!=null && play_video.IsAlive)
             {
@@ -296,7 +288,8 @@ namespace WPF_Cameras_Viewer
             }
             else;            
         }
-        private void Button_right_arrow_Click(object sender, RoutedEventArgs e)
+
+        private void Button_right_arrow_Click(object sender, RoutedEventArgs e)//обработчик нажатия правой кнопки-стрелочки
         {
             
             if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds>=switch_cameras_delay && !we_already_trying_reconnect)             
@@ -327,7 +320,7 @@ namespace WPF_Cameras_Viewer
             
         }
 
-        private void Button_left_arrow_Click(object sender, RoutedEventArgs e)
+        private void Button_left_arrow_Click(object sender, RoutedEventArgs e)//обработчик нажатия левой кнопки-стрелочки
         {
             if (play_video != null && DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay &&!we_already_trying_reconnect)//мы переключаем видео раз в секунду чтобы предотвратить ОЧЕНЬ частых нажатий
             {
@@ -355,9 +348,7 @@ namespace WPF_Cameras_Viewer
             else;//поток не был создан еще следовательно ни одного стрима не было
         }
 
-
-
-        private void Combox_quality_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Combox_quality_SelectionChanged(object sender, SelectionChangedEventArgs e)//обработчик выбора качества стрима 
         {
             var comboBox = (ComboBox)sender;
             var selected_Item = (ComboBoxItem)comboBox.SelectedItem;
@@ -391,7 +382,7 @@ namespace WPF_Cameras_Viewer
             Button_Click_Play(this, null);
         }
 
-        private void List_view_availab_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void List_view_available_cameras_SelectionChanged(object sender, SelectionChangedEventArgs e)//обработчик выбора камеры посредством клика на неё
         {
             var listview = (ListView)sender;
             if (DateTime.Now.Subtract(time_of_last_switch_cam).TotalSeconds >= switch_cameras_delay && !we_already_trying_reconnect)
@@ -422,7 +413,7 @@ namespace WPF_Cameras_Viewer
     
         }
 
-        private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)//обработчик нажатия кнопок для управления через клавиатуру
         {
             switch (e.Key)
             {
