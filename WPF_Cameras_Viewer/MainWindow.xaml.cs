@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Xml;
@@ -23,7 +24,7 @@ namespace WPF_Cameras_Viewer
         public string camera_id; //id камеры по которому мы подключаемся
         public string camera_name;//название ккамеры 
     }
-    public partial class MainWindow : Window
+    public partial class MainWindow_Cameras_Viewer : Window
     {
         string URL = "http://demo.macroscop.com:8080/mobile?login=root&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&resolutionX=640&resolutionY=480&fps=25";
         readonly Сamera_stream_inf[] quality_inf_array = new Сamera_stream_inf[3];//массив в котором хранятся 3 типа возможных разрешений для стрима
@@ -230,7 +231,7 @@ namespace WPF_Cameras_Viewer
                 txtblock_time.Text = DateTime.Now.ToString();
             }
         }
-        public MainWindow()
+        public MainWindow_Cameras_Viewer()
         {
             InitializeComponent();
             Get_list_of_cameras();//парсим xml документ чтобы получить список камер
@@ -421,6 +422,24 @@ namespace WPF_Cameras_Viewer
     
         }
 
-   //TODO: сделать переключение кнопками
+        private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    Button_left_arrow_Click(this, null);
+                    break;
+
+                case Key.Right:
+                    Button_right_arrow_Click(this, null);
+                    break;
+                case Key.Enter:
+                    Button_Click_Play(this, null);
+                    break;
+                default: 
+                    break;
+            }
+
+        }
     }
 }
