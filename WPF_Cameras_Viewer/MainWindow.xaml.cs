@@ -73,7 +73,7 @@ namespace WPF_Cameras_Viewer
                 int start_jpeg_index = 0;//индекс байтов начала 0xff 0xd8
 
                 bool is_end_of_frame = false;
-
+                bool is_bad_image = false;
                 while (!is_end_of_frame)
                 {
                     int actual_number_of_bytes = 0;//хранит число байт реально считанных потоком                        
@@ -87,8 +87,16 @@ namespace WPF_Cameras_Viewer
                         Reconnect_to_camera();
                         return; //выходим из функции т.к пользователь разорвал соединение                           
                     }
-
-                    byte_buff.CopyTo(jpeg_frame, jpeg_i);
+                    try
+                    {
+                        byte_buff.CopyTo(jpeg_frame, jpeg_i);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        is_bad_image = true;
+                        break;//выйдем из обработки кадра так как он ошибочно передался по сети
+                    }
+                 
                     jpeg_i += actual_number_of_bytes;
 
                     for (int j = 0; j < actual_number_of_bytes - 1; j++)
@@ -102,19 +110,21 @@ namespace WPF_Cameras_Viewer
                         if (byte_buff[j] == 0xff && byte_buff[j + 1] == 0xd9)//конец кадра
                         {
                             is_end_of_frame = true;
-
                         }
                     }
-                }  
-                
-                //пропустим заголовок у jpeg кадра
-                Array.Copy(jpeg_frame, start_jpeg_index, jpeg_skipped_header, 0,jpeg_skipped_header.Length-start_jpeg_index);           
-                
-                //Обновим полученную картинку в UI потоке
-                Dispatcher.Invoke(() =>
+                }
+                if (!is_bad_image)
                 {
-                    img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i); ;
-                });
+                    //пропустим заголовок у jpeg кадра
+                    Array.Copy(jpeg_frame, start_jpeg_index, jpeg_skipped_header, 0, jpeg_skipped_header.Length - start_jpeg_index);
+
+                    //Обновим полученную картинку в UI потоке
+                    Dispatcher.Invoke(() =>
+                    {
+                        img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i); ;
+                    });
+                }
+                else;//пропустим картинку
             }
         }
 
