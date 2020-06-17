@@ -18,21 +18,20 @@ namespace WPF_Cameras_Viewer
     {
       struct Сamera_name_and_frame//структура названия камеры и изображения с неё
       {
-            public string Camera_Name;
-            public ImageSource Camera_Frame; 
+            public string Camera_Name;//название камеры
+            public ImageSource Camera_Frame; //изображение с камеры
       }
         private const int camera_interrogation_rate_ms = 5000;//задает частоту опроса камер, которые находятся не в сети 
         public void  Load_images_from_ip_cameras(ListView list_view_availab_cameras, List<Сamera_id_and_name> available_cameras,Dispatcher Dispatcher)//опрашивает каждую камеру из списка доступных и получает с неё изображение, в конце обновляя UI
         {
-                bool all_cameras_online = true;
+                bool all_cameras_online = true;//флаг, все ли камеры ответили на запрос(онлайн)
                 List<int> list_indexes_offline_cameras = new List<int>();//индексы камер которые не отвечает на запросы
                 
                 if (available_cameras.Count > 0)
                 {
                     List<Сamera_name_and_frame> list_cam_name_and_frame = new List<Сamera_name_and_frame>();//Список названия камеры и её изображения
                     var cnvrt_images = new Convert_images();
-                  
-                    
+                                     
                     for (int i = 0; i < available_cameras.Count; i++)
                     {
                         string URL = $"http://demo.macroscop.com:8080/mobile?login=root&channelid=" +
@@ -67,13 +66,12 @@ namespace WPF_Cameras_Viewer
                                     if (byte_buff[j] == 0xff && byte_buff[j + 1] == 0xd9)//конец кадра
                                     {
                                         is_end_of_frame = true;
-
                                     }
                                 }
                             }
                             image_jpeg = image_jpeg.Skip(start_jpeg_index).ToArray();//пропустим заголовок до начала jpeg кадра
 
-                            list_cam_name_and_frame.Add(new Сamera_name_and_frame()
+                            list_cam_name_and_frame.Add(new Сamera_name_and_frame()//Добавим название камеры и её полученное изображение
                             {
                                 Camera_Name = available_cameras.ElementAt(i).camera_name,
                                 Camera_Frame = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index)
@@ -84,9 +82,9 @@ namespace WPF_Cameras_Viewer
                         }
                         catch (Exception)//если камера не отвечает(IOException, WebException) то мы вместо первого кадра от неё поставим картинку - ошибка (no signal)
                         {
-                            IntPtr h_bmp_stream_background = Properties.Resources.no_signal.GetHbitmap();
-                            var img_no_signal = (ImageSource)Imaging.CreateBitmapSourceFromHBitmap(h_bmp_stream_background, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
+                            IntPtr h_bmp_stream_background = Properties.Resources.no_signal.GetHbitmap();//Добавим картинку "no signal", означающую что камера не отвечает (не онлайн) 
+                            var img_no_signal = (ImageSource)Imaging.CreateBitmapSourceFromHBitmap(h_bmp_stream_background, IntPtr.Zero, 
+                                                                                                   Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                             list_cam_name_and_frame.Add(new Сamera_name_and_frame()
                             {
                                 Camera_Name = available_cameras.ElementAt(i).camera_name,
@@ -97,10 +95,9 @@ namespace WPF_Cameras_Viewer
                             list_indexes_offline_cameras.Add(i);
                         }
                     }
-
+                    //Обновим отображение в UI (элемент - ListView )
                     foreach (var name_and_frame in list_cam_name_and_frame)
                     {
-
                         list_view_availab_cameras.Items.Add(new { name_and_frame.Camera_Name, name_and_frame.Camera_Frame });
                     }
 
@@ -123,8 +120,9 @@ namespace WPF_Cameras_Viewer
         {
             await Task.Run(() =>
             {
-                bool all_cameras_online = false;
+                bool all_cameras_online = false;// флаг, определяющий переподключились ли мы ко всем камерам,которые не отвечали вначале 
                 Convert_images cnvrt_images = new Convert_images();
+               
                 while (!all_cameras_online)
                 {
                     all_cameras_online = true;

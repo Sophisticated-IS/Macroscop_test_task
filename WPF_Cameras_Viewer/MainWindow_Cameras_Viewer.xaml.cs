@@ -65,16 +65,18 @@ namespace WPF_Cameras_Viewer
                 Reconnect_to_camera();
                 return;//выходим из функции так как сервер не отвечает
             }
-            var jpeg_frame = new byte[180000];// MJPEG 1280*720 * 24 /15.4(compression) = 1 436 260/8 = 180 000 bytes; Степень сжатия 15.4
+            var jpeg_frame = new byte[180000];//определяет jpeg кадр(с заголовком) из потока  
+                                              // Размер буфера рассчитан так: MJPEG 1280*720 * 24 /15.4(compression) = 1 436 260/8 = 180 000 bytes; Степень сжатия 15.4
+            
             while (true)
             {
                 var byte_buff = new byte[1024];//буфер для считывания потока байтов из ответа сервера
-                var jpeg_skipped_header = new byte[180000];//байты jpeg картинки без заголовка
+                var jpeg_skipped_header = new byte[180000];//байты уже самой jpeg картинки без заголовка
                 int jpeg_i = 0;//индекс для движения по массиву  image_jpeg
-                int start_jpeg_index = 0;//индекс байтов начала 0xff 0xd8
+                int start_jpeg_index = 0;//индекс байтов начала 0xff 0xd8,указывает на байт 0xff
 
-                bool is_end_of_frame = false;
-                bool is_bad_image = false;
+                bool is_end_of_frame = false;//флаг, определяет закончился ли jpeg кадр
+                bool is_bad_image = false;//флаг, определяет произошла ли ошибка при передаче и мы ышли за предел выделенного диапазона буфера
                 while (!is_end_of_frame)
                 {
                     int actual_number_of_bytes = 0;//хранит число байт реально считанных потоком                        
@@ -131,9 +133,6 @@ namespace WPF_Cameras_Viewer
 
         public void Get_list_of_cameras()//Заполняет список доступных камер из XML документа
         {
-               bool at_least_one_camera_is_available_on_server = false;
-               while (!at_least_one_camera_is_available_on_server)
-               {
                    XmlDocument xml_doc = new XmlDocument();
                    const string configs_url = "http://demo.macroscop.com:8080/configex?login=root";
 
@@ -163,8 +162,6 @@ namespace WPF_Cameras_Viewer
 
                    if (available_cameras_list.Count > 0)
                    {
-                       at_least_one_camera_is_available_on_server = true;
-
                        current_camera.camera_order_id = 0;//индекс 0 так как мы инициализируем текущую камеру как первую из списка всех доступных
 
                        current_camera.cam_id_name.camera_id = available_cameras_list.First().camera_id;
@@ -178,14 +175,12 @@ namespace WPF_Cameras_Viewer
                    else
                    {
                        MessageBox.Show("We have not found available cameras");
-
-                   }
-               }
+                   }               
 
         }
-        async void Reconnect_to_camera()//асинхронный метод для восстановления соединения  при потери 
+        async void Reconnect_to_camera()//асинхронный метод для восстановления соединения  при потере 
         {
-            we_already_trying_reconnect = true;
+            we_already_trying_reconnect = true;//флаг, определят пытаемся ли мы уже и так переподключиться к камере
             await Task.Run(() =>
             {
                 int i = 0;
@@ -193,7 +188,7 @@ namespace WPF_Cameras_Viewer
                 {
                     try
                     {
-                        HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://www.google.ru/");
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://www.google.ru/");//проверяем соединение у пользователя, посредством пингования google 
                         request.Timeout = 10000;
                         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                         Stream ReceiveStream1 = response.GetResponseStream();
@@ -223,7 +218,7 @@ namespace WPF_Cameras_Viewer
                 }
             });
         }
-        async void Show_data_and_time()//асинхроннный метод - таймер
+        async void Show_date_and_time()//асинхроннный метод - таймер
         {
             while (true)
             {
@@ -250,7 +245,7 @@ namespace WPF_Cameras_Viewer
             img_stream_picture.Source = Imaging.CreateBitmapSourceFromHBitmap(Properties.Resources.Stream_default_img.GetHbitmap(), IntPtr.Zero, 
                                                                               Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
            
-            Show_data_and_time();
+            Show_date_and_time();//запускаем таймер
             
             //Загрузим превью для каждой камеры
              var get_picture_from_each_cam = new IP_cameras_get_picture();

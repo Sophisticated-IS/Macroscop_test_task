@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace WPF_Cameras_Viewer
 {
-     class Convert_images
+     class Convert_images//располагаются функции для конвертирования байтов и битовых карт  к ImageSource
     {
         public ImageSource Convert_to_ImageSource (byte[] image_bytes,int index_of_end)//принимает массив байт и индекс конца интервала  массива для преобразования
         {
