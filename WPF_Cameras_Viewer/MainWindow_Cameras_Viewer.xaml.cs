@@ -120,11 +120,18 @@ namespace WPF_Cameras_Viewer
                 {
                     //пропустим заголовок у jpeg кадра
                     Array.Copy(jpeg_frame, start_jpeg_index, jpeg_skipped_header, 0, jpeg_skipped_header.Length - start_jpeg_index);
-
+                  
                     //Обновим полученную картинку в UI потоке
                     Dispatcher.Invoke(() =>
                     {
-                        img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i);
+                        try
+                        {
+                            img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i);
+                        }
+                        catch (NotSupportedException)//Если была ошибка при преобразовании картинки
+                        {
+                            //то мы пропустим такой кадр
+                        }                        
                     });
                 }
                 else;//пропустим картинку
