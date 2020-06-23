@@ -11,3 +11,4 @@ C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WP
 C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.csproj.GenerateResource.cache
 C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.exe
 C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.pdb
+C:\Users\Sova IS\source\repos\WPF_Cameras_Viewer\WPF_Cameras_Viewer\obj\Debug\WPF_Cameras_Viewer.csprojAssemblyReference.cache

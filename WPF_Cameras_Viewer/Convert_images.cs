@@ -8,9 +8,9 @@ using System.Windows;
 
 namespace WPF_Cameras_Viewer
 {
-     class Convert_images//располагаются функции для конвертирования байтов и битовых карт  к ImageSource
+    public static class Convert_images//располагаются функции для конвертирования байтов и битовых карт  к ImageSource
     {
-        public ImageSource Convert_to_ImageSource (byte[] image_bytes,int index_of_end)//принимает массив байт и индекс конца интервала  массива для преобразования
+       static public ImageSource Convert_to_ImageSource (byte[] image_bytes,int index_of_end)//принимает массив байт и индекс конца интервала  массива для преобразования
         {
             BitmapImage bmp_img = new BitmapImage();
             MemoryStream ms = new MemoryStream(image_bytes, 0, index_of_end);
@@ -20,7 +20,7 @@ namespace WPF_Cameras_Viewer
             return bmp_img as ImageSource;
         }
 
-        public ImageSource Convert_to_ImageSource(Bitmap bmp)//преобразует bitmap к ImageSource
+      static  public ImageSource Convert_to_ImageSource(Bitmap bmp)//преобразует bitmap к ImageSource
         {
             IntPtr h_bmp = bmp.GetHbitmap();
             return Imaging.CreateBitmapSourceFromHBitmap(h_bmp, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());

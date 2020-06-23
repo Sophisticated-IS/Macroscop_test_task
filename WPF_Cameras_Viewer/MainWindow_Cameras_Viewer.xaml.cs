@@ -54,7 +54,6 @@ namespace WPF_Cameras_Viewer
             var request = (HttpWebRequest)WebRequest.Create(URL);
             request.KeepAlive = true;//для поддержки соединения
             Stream stream;
-            Convert_images cnvrt_images = new Convert_images();
             try
             {
                 stream = request.GetResponse().GetResponseStream();             
@@ -126,7 +125,7 @@ namespace WPF_Cameras_Viewer
                     {
                         try
                         {
-                            img_stream_picture.Source = cnvrt_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i);
+                            img_stream_picture.Source = Convert_images.Convert_to_ImageSource(jpeg_skipped_header, jpeg_i);
                         }
                         catch (NotSupportedException)//Если была ошибка при преобразовании картинки
                         {
@@ -242,11 +241,10 @@ namespace WPF_Cameras_Viewer
             quality_inf_array[0] = new Сamera_stream_inf { quality_degree = "Low",    X_resolution = 640,  Y_resolution = 480 };
             quality_inf_array[1] = new Сamera_stream_inf { quality_degree = "Middle", X_resolution = 800,  Y_resolution = 480 };
             quality_inf_array[2] = new Сamera_stream_inf { quality_degree = "High",   X_resolution = 1280, Y_resolution = 720 };
-          
-            var cnvrt_to_img_source = new Convert_images();
+                     
             //Преобразуем иконки для левой и правой кнопки -стрелочки к ImageSource 
-            img_left_arrow.Source = cnvrt_to_img_source.Convert_to_ImageSource(Properties.Resources.left_arrow.ToBitmap());
-            img_right_arrow.Source = cnvrt_to_img_source.Convert_to_ImageSource(Properties.Resources.right_arrow.ToBitmap());
+            img_left_arrow.Source = Convert_images.Convert_to_ImageSource(Properties.Resources.left_arrow.ToBitmap());
+            img_right_arrow.Source = Convert_images.Convert_to_ImageSource(Properties.Resources.right_arrow.ToBitmap());
 
             //Зададим фон по дефолту для стрима 
             img_stream_picture.Source = Imaging.CreateBitmapSourceFromHBitmap(Properties.Resources.Stream_default_img.GetHbitmap(), IntPtr.Zero, 

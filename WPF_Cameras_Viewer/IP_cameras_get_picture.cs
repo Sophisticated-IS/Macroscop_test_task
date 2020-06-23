@@ -29,8 +29,7 @@ namespace WPF_Cameras_Viewer
                 
                 if (available_cameras.Count > 0)
                 {
-                    List<Сamera_name_and_frame> list_cam_name_and_frame = new List<Сamera_name_and_frame>();//Список названия камеры и её изображения
-                    var cnvrt_images = new Convert_images();
+                    List<Сamera_name_and_frame> list_cam_name_and_frame = new List<Сamera_name_and_frame>();//Список названия камеры и её изображения                 
                                      
                     for (int i = 0; i < available_cameras.Count; i++)
                     {
@@ -74,7 +73,8 @@ namespace WPF_Cameras_Viewer
                             list_cam_name_and_frame.Add(new Сamera_name_and_frame()//Добавим название камеры и её полученное изображение
                             {
                                 Camera_Name = available_cameras.ElementAt(i).camera_name,
-                                Camera_Frame = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index)
+                                Camera_Frame = Convert_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index)
+                               
                             }
                             );
 
@@ -121,7 +121,6 @@ namespace WPF_Cameras_Viewer
             await Task.Run(() =>
             {
                 bool all_cameras_online = false;// флаг, определяющий переподключились ли мы ко всем камерам,которые не отвечали вначале 
-                Convert_images cnvrt_images = new Convert_images();
                
                 while (!all_cameras_online)
                 {
@@ -168,7 +167,7 @@ namespace WPF_Cameras_Viewer
 
                             Dispatcher.Invoke(() =>
                             {
-                                var image_source_jpeg = cnvrt_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index);
+                                var image_source_jpeg = Convert_images.Convert_to_ImageSource(image_jpeg, jpeg_i - start_jpeg_index);
                                 list.Items[index_offline_cam] = new { Camera_Name = available_cameras.ElementAt(index_offline_cam).camera_name, Camera_Frame = image_source_jpeg };
                             });
                             stream.Close();
